@@ -28,6 +28,7 @@ public class HttpRequestHandlerAdapterDemo implements HttpRequestHandler {
         items_2.setPrice(5000f);
         items_2.setDetail("iphone6苹果手机！");
 
+        System.out.println("asdf");
         itemsList.add(items_1);
         itemsList.add(items_2);
 
