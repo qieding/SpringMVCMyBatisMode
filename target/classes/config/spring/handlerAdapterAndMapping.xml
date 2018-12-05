@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/jdbc
+    http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.2.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+    <!--配置一：SimpleControllerHandlerAdapter和BeanNameUrlHandlerMapping-->
+    <!--配置HandlerAdapter：SimpleControllerHandlerAdapter要对应的Handler实现Controller接口-->
+    <!--<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
+    <!--配置HandlerMapping:BeanNameUrlHandlerMapping,根据Bean的name找相应的Handler-->
+    <!--<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
+    <!--配置Handler-->
+    <!--<bean name="/queryItems1" class="com.dhk.controller.SimpleControllerHandlerAdapterDemo"/>-->
+
+    <!--配置二：SimpleControllerHandlerAdapter和SimpleUrlHandlerMapping-->
+    <!--配置HandlerAdapter：SimpleControllerHandlerAdapter要对应的Handler实现Controller接口-->
+    <!--<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
+    <!--配置HandlerMapping:BeanNameUrlHandlerMapping,根据Bean的id找相应的Handler-->
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+        <!--<property name="mappings">-->
+            <!--<props>-->
+                <!--<prop key="/queryItems2">itemsController1</prop>-->
+                <!--<prop key="/queryItems3">itemsController1</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--配置Handler-->
+    <!--<bean id="itemsController1" class="com.dhk.controller.SimpleControllerHandlerAdapterDemo"/>-->
+
+    <!--配置三：HttpRequestHandlerAdapter和BeanNameUrlHandlerMapping-->
+    <!--配置HandlerAdapter：HttpRequestHandlerAdapter要对应的Handler实现HttpRequstHandler接口-->
+    <!--<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />-->
+    <!--配置HandlerMapping:BeanNameUrlHandlerMapping,根据Bean的name找相应的Handler-->
+    <!--<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
+    <!--配置Handler-->
+    <!--<bean name="/queryItems4" class="com.dhk.controller.HttpRequestHandlerAdapterDemo"/>-->
+
+    <!--配置四：HttpRequestHandlerAdapter和SimpleUrlHandlerMapping-->
+    <!--配置HandlerAdapter：HttpRequestHandlerAdapter要对应的Handler实现HttpRequstHandler接口-->
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
+    <!--配置HandlerMapping:SimpleUrlHandlerMapping,根据Bean的id找相应的Handler-->
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/queryItems5">itemController2</prop>
+            </props>
+        </property>
+    </bean>
+    <!--配置Handler-->
+    <bean id="itemController2" class="com.dhk.controller.HttpRequestHandlerAdapterDemo"/>
+
+
+    <!--配置ViewResolver-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 配置jsp路径的前缀 -->
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <!-- 配置jsp路径的后缀 -->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>

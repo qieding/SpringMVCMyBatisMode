@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhk.dao.OrdersMapperDao">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    <resultMap id="myOrders" type="Orders">
+        <result property="id" column="id" />
+        <result property="user_id" column="user_name"/>
+        <result property="number"  column="number"/>
+        <result property="createTime" column="createtime"/>
+        <result property="note" column="note" />
+    </resultMap>
+    <select id="selectOrdersById" resultMap="ordersMap2">
+        <!--返回映射的时候不区分大小写-->
+        select *
+        from orders where id = #{id}
+    </select>
+    <select id="selectOrdersByUserId" resultMap="ordersMap2">
+        <!--返回映射的时候不区分大小写-->
+        select *
+        from orders where user_id = #{id}
+    </select>
+    <!--  一对一查询两个表
+         1、关联的嵌套查询。
+    -->
+    <select id="selectOrdersUserByOrdersId" resultType="com.dhk.vo.OrdersUserVo">
+          select ord.id id,
+          ord.user_id userId,
+          ord.number number,
+          ord.createtime createTime,
+          ord.note note,
+          us.id "user.id",
+          us.username "user.userName",
+          us.birthday "user.birthday",
+          us.sex "user.sex",
+          us.address "user.address"
+          from orders ord inner join user us
+          on ord.user_id = us.id
+          where ord.id = #{id}
+    </select>
+    <!--  一对一查询两个表
+         2、resultMap映射（别名）
+    -->
+    <resultMap id="ordersUserMap" type="com.dhk.vo.OrdersUserVo">
+        <!--order的属性-->
+        <result property="id" column="ord_id" />
+        <result property="userId" column="user_id2" />
+        <result property="number" column="number" />
+        <result property="createTime" column="createTime" />
+        <result property="note" column="note" />
+        <!--user的属性-->
+        <result property="user.id" column="user_id" />
+        <result property="user.userName" column="username" />
+        <result property="user.birthday" column="birthday" />
+        <result property="user.sex" column="sex" />
+        <result property="user.address" column="address" />
+    </resultMap>
+    <select id="selectOrdersUserByOrdersId2" resultMap="ordersUserMap">
+          select ord.id ord_id,
+          ord.user_id user_id2,
+          ord.number number,
+          ord.createtime createTime,
+          ord.note note,
+          us.id user_id,
+          us.username,
+          us.birthday,
+          us.sex,
+          us.address
+          from orders ord inner join user us
+          on ord.user_id = us.id
+          where ord.id = #{id}
+    </select>
+    <!--  一对一查询两个表
+        3、resultMap+extends 映射（别名）
+   -->
+    <resultMap id="ordersMap2" type="Orders">
+        <!--order的属性-->
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="number" column="number" />
+        <result property="createTime" column="createtime" />
+        <result property="note" column="note" />
+    </resultMap>
+    <resultMap id="ordersMap" type="Orders">
+        <!--order的属性-->
+        <result property="id" column="ord_id" />
+        <result property="userId" column="user_id2" />
+        <result property="number" column="number" />
+        <result property="createTime" column="createtime" />
+        <result property="note" column="note" />
+    </resultMap>
+    <resultMap id="ordersUserExtendsMap" extends="ordersMap" type="com.dhk.vo.OrdersUserVo">
+        <!--user的属性-->
+        <result property="user.id" column="user_id" />
+        <result property="user.userName" column="username" />
+        <result property="user.birthday" column="birthday" />
+        <result property="user.sex" column="sex" />
+        <result property="user.address" column="address" />
+    </resultMap>
+    <select id="selectOrdersUserByOrdersId3" resultMap="ordersUserExtendsMap">
+          select ord.id ord_id,
+          ord.user_id user_id2,
+          ord.number number,
+          ord.createtime createTime,
+          ord.note note,
+          us.id user_id,
+          us.username,
+          us.birthday,
+          us.sex,
+          us.address
+          from orders ord inner join user us
+          on ord.user_id = us.id
+          where ord.id = #{id}
+    </select>
+    <!--  一对一查询两个表
+        4、association标签
+   -->
+    <resultMap id="ordersUserExtendsAssociationMap" extends="ordersMap" type="com.dhk.vo.OrdersUserVo">
+        <!--user的属性-->
+        <association property="user" columnPrefix="fuck_" javaType="User">
+            <result property="id" column="user_id" />
+            <result property="userName" column="username" />
+            <result property="birthday" column="birthday" />
+            <result property="sex" column="sex" />
+            <result property="address" column="address" />
+        </association>
+    </resultMap>
+    <select id="selectOrdersUserByOrdersId4" resultMap="ordersUserExtendsAssociationMap">
+          select ord.id ord_id,
+          ord.user_id user_id2,
+          ord.number number,
+          ord.createtime createTime,
+          ord.note note,
+          us.id fuck_user_id,
+          us.username fuck_username,
+          us.birthday fuck_birthday,
+          us.sex fuck_sex,
+          us.address fuck_address
+          from orders ord inner join user us
+          on ord.user_id = us.id
+          where ord.id = #{id}
+    </select>
+    <!--  一对一查询两个表
+        5、association+resultMap标签,查找UserMapper.xml中的resultMap通过namespace查找。
+   -->
+    <resultMap id="ordersUserExtendsAssociationResultMap" extends="ordersMap" type="com.dhk.vo.OrdersUserVo">
+        <!--user的属性-->
+        <association property="user" fetchType="lazy" columnPrefix="fuck_" javaType="User" resultMap="com.dhk.dao.UserMapperDao.userMap" />
+    </resultMap>
+    <select id="selectOrdersUserByOrdersId5" resultMap="ordersUserExtendsAssociationResultMap">
+          select ord.id ord_id,
+          ord.user_id user_id2,
+          ord.number,
+          ord.createtime,
+          ord.note,
+          us.id fuck_id,
+          us.username fuck_username,
+          us.birthday fuck_birthday,
+          us.sex fuck_sex,
+          us.address fuck_address
+          from orders ord inner join user us
+          on ord.user_id = us.id
+          where ord.id = #{id}
+    </select>
+    <!--  一对一查询两个表
+        6、关联的嵌套查找。
+        执行两次SQL，可以懒加载需要配置agressiveLazyLoading
+   -->
+    <resultMap id="ordersUserExtendsAssociationTwoSQLMap" extends="ordersMap" type="com.dhk.vo.OrdersUserVo">
+        <!--user的属性-->
+        <!--懒加载-->
+        <association property="user" fetchType="lazy" column="{myMuser=user_id2}" select="com.dhk.dao.UserMapperDao.selectUserById" />
+    </resultMap>
+    <select id="selectOrdersUserByOrdersId6" resultMap="ordersUserExtendsAssociationTwoSQLMap">
+          select ord.id ord_id,
+          ord.user_id user_id2,
+          ord.number,
+          ord.createtime,
+          ord.note
+          from orders ord
+          where ord.id = #{id}
+    </select>
+</mapper>

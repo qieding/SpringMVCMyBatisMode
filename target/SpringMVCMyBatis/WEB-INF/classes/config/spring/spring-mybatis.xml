@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+    <!-- 扫描service包下所有使用注解的类型 -->
+   <!-- <context:component-scan base-package="com.dhk"/>
+
+    配置数据库相关参数properties的属性：${url} -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+   <!-- 数据库连接池 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <!--<property name="driverClass" value="${jdbc.driver}"/>-->
+        <!--<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/persontest"/>-->
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <!--<property name="user" value="${jdbc.username}"/>-->
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
+        <property name="minPoolSize" value="10"/>
+        <property name="autoCommitOnClose" value="${c3p0.autoCommitOnClose}"/>
+        <property name="checkoutTimeout" value="${c3p0.checkoutTimeout}"/>
+        <property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}"/>
+    </bean>
+    <!-- 配置SqlSessionFactory对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 扫描model包 使用别名 -->
+        <property name="typeAliasesPackage" value="com.dhk.entity"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+        <property name="configLocation" value="classpath:config/mybatis/sqlMapConfig.xml"/>
+    </bean>
+    <!--<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">-->
+        <!--<constructor-arg index="0" ref="sqlSessionFactory" />-->
+    <!--</bean>-->
+    <!-- 配置扫描Dao接口包，动态实现Dao接口，注入到spring容器中,代替MapperFactoryBean的集合注入管理 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dhk.dao" />
+        <!--字符串引用sqlSessionFactory-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+    <!--如果配置service层注入dao：@Resource(name="userMapper123")、Autowire不用-->
+    <!--<bean id="userMapper123" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+        <!--<property name="mapperInterface" value="com.dhk.dao.UserMapperDao" />-->
+        <!--<property name="sqlSessionFactory" ref="sqlSessionFactory" />-->
+    <!--</bean>-->
+    <!--<bean id="personMapperDao" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+        <!--<property name="mapperInterface" value="com.dhk.dao.PersonMapperDao" />-->
+        <!--<property name="sqlSessionFactory" ref="sqlSessionFactory" />-->
+    <!--</bean>-->
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!-- 配置基于注解的声明式事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!--<bean id="cacheManager" class="org.springframework.cache.CacheManager" abstract="true"/>-->
+    <!--<cache:annotation-driven cache-manager="cacheManager"/>-->
+</beans>
+<!--
+    1、如果
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dhk.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+    value不是ref的原因：
+    如果是ref那么本类先加载，那么<context:property-placeholder location="classpath:jdbc.properties"/>
+    解析不了。如果不用context:property-placeholder属性那么可以改成ref。
+
+    2、MapperScannerConfigurer是为了将包下的接口映射成MapperFactoryBean然后实例化。
+    需要关联sqlSessionFactoryBeanName的sqlSessionFactory用于实现增删改查。
+
+
+    3、MapperScannerConfigurer映射成MapperFactoryBean的同时，还可以关联
+    sqlSessionTemplateBeanName的sqlSession，用于增删改查。由于sqlSession是由
+    sqlSessionFactory来创建的所以需要sqlSession的bean关联。
+    配置如下：（mybatis版本：3.4.2，mybatis-spring版本：1.3.1）
+     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dhk.dao" />
+        <property name="sqlSessionTemplateBeanName" value="sqlSession" />
+    </bean>
+    4、MapperScannerConfigurer其实是替代了单个的MapperFactoryBean的配置，如下。
+     <bean id="userMapper123" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.dhk.dao.UserMapperDao" />
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+    <bean id="personMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.dhk.dao.PersonMapperDao" />
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+    MapperFactoryBean其作用是根据Mapper接口获取我们想要的Mapper对象，
+    它封装了原有的session.getMapper()功能的实现。
+   在定义MapperFactoryBean时，需要注入一下两个属性：
+    SqlSessionFactoryBean对象，用于提供SqlSession
+    要返回Mapper对象的Mapper接口
+-->

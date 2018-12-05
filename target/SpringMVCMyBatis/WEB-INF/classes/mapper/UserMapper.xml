@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhk.dao.UserMapperDao">
+    <!--没写type属性默认为mybatis自带的二级缓存-->
+    <cache
+        eviction="FIFO"
+        flushInterval="60000"
+        size ="512"
+        readOnly="false"/>
+    <resultMap id="userMap" type="User">
+        <id property="id" column="id" />
+        <result property="userName" column="username" />
+        <result property="birthday" column="birthday" />
+        <result property="sex" column="sex" />
+        <result property="address" column="address" />
+    </resultMap>
+    <select id="selectUserById" resultType="User" flushCache="false" >
+<!--返回映射的时候不区分大小写-->
+        select id,username ,birthday,sex,address
+        from user where id = #{myMuser}
+    </select>
+    <!--一对多
+       1、嵌套查询映射 collection
+       resultMap可以继承resultMap也可以继承类名
+       -->
+    <resultMap id="userOrdersMap" extends="userMap" type="com.dhk.vo.UserOrdersVo">
+            <collection property="ordersList" columnPrefix="usero_" resultMap="com.dhk.dao.OrdersMapperDao.ordersMap2" />
+    </resultMap>
+    <select id="selectUserOrdersByUserId" parameterType="Int" resultMap="userOrdersMap">
+          select
+          us.id,
+          us.username,
+          us.birthday,
+          us.sex,
+          us.address,
+          ord.id usero_id,
+          ord.user_id usero_user_id,
+          ord.number usero_number,
+          ord.createtime usero_createtime,
+          ord.note usero_note
+          from user us
+          inner join orders ord on us.id = ord.user_id
+          where us.id = #{id}
+    </select>
+    <!--一对多
+      1、嵌套查询 collection
+      collection+select
+      -->
+    <resultMap id="userOrdersMap2" extends="userMap" type="com.dhk.vo.UserOrdersVo">
+        <collection property="ordersList" fetchType="lazy" column="{id=id}" select="com.dhk.dao.OrdersMapperDao.selectOrdersByUserId" />
+    </resultMap>
+    <select id="selectUserOrdersByUserId2" parameterType="Int" resultMap="userOrdersMap2">
+          select
+          us.id,
+          us.username,
+          us.birthday,
+          us.sex,
+          us.address
+          from user us
+          where us.id = #{id}
+    </select>
+    <select id="selectUserByUser" parameterType="User" resultType="User">
+        select * from user where id=#{id}
+    </select>
+    </mapper>
