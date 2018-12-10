@@ -26,6 +26,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         /**
          *  这里测试非常有意思：方便理解SpringMVC拦截器整个流程
          *  1、当Controller返回逻辑视图名时候，会重新执行拦截器的。
+         *  return "String",相当于getRequestDispatcher.forward，
+         *  即：前端控制器又重新doDispatcher一次，请求一次。
          *  2、如果上一个URL的前缀锁定现在forword另一个URLname后面的则会在前面基础上forward的。
          *  http://localhost:8080/SpringMVCMyBatis/logout    -1
          * 用户名不为空
@@ -46,11 +48,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-
+            System.out.println("loginInteceptor postHandle");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-
+        System.out.println("loginInteceptor afterCompletion");
     }
 }
