@@ -2,7 +2,7 @@
 ***SpringMVCMyBatisMode***
 ~~SpringMVCMyBatisMode~~
 ---
-![asdf](https://p0.ssl.qhimg.com/t019b7e111feac1184d.jpg "B哥")
+![aaaaaaaaaa](https://p0.ssl.qhimg.com/t019b7e111feac1184d.jpg "B哥")
 
 A、mybatis部分：（Mybatis从入门到精通[刘增辉]+传智燕青老师课堂笔记）
    1、sqlMapConfig.xml的加载流程。
