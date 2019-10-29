@@ -4,11 +4,11 @@
 ---
 !["aaaaaaaaaa"](https://p0.ssl.qhimg.com/t019b7e111feac1184d.jpg)
 
-A、mybatis部分：（Mybatis从入门到精通[刘增辉]+传智燕青老师课堂笔记）
-   1、sqlMapConfig.xml的加载流程。
-   2、xml映射文件、命名空间，sqlMapConfig.xml关联，测试selectOne和selectList。
-   3、模糊查询 concat(a,b) #{value}和${value}、自增主键select last_insert_id();。
-   4、log4j的配置：导入包和log4j.properties，引用。
+  A、mybatis部分：（Mybatis从入门到精通[刘增辉]+传智燕青老师课堂笔记）
+     1、sqlMapConfig.xml的加载流程。
+     2、xml映射文件、命名空间，sqlMapConfig.xml关联，测试selectOne和selectList。
+     3、模糊查询 concat(a,b) #{value}和${value}、自增主键select last_insert_id();。
+     4、log4j的配置：导入包和log4j.properties，引用。
    5、insert update select delete 标签。
    6、parameterType和resultType。
    7、resultMap。
