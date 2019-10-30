@@ -2,7 +2,7 @@
 ***SpringMVCMyBatisMode***
 ~~SpringMVCMyBatisMode~~
 ---
-!["aaaaaaaaaa"](https://p0.ssl.qhimg.com/t019b7e111feac1184d.jpg)  
+!["aaaaaaaaaa"]()  
 [百度](https://www.baidu.com/)  
 
 ```java 
